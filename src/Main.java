@@ -2,7 +2,7 @@ package src;
 import java.util.*;
 import java.io.IOException;
 
-enum MENU { DUMMY, SHOW_SCORE, LETTERS, NUMBERS, QUIT, ERROR }
+enum GAMEOPTION { DUMMY, SHOW_SCORE, LETTERS, NUMBERS, QUIT, ERROR }
 enum DIFFICULTY { DUMMY, EASY, MEDIUM, HARD, ERROR }
 
 public class Main {
@@ -18,22 +18,20 @@ public class Main {
         printCenteredTitle("Welcome to \"Out Of Order!\"", Constants.TOTAL_WIDTH, Constants.PADDING_CHAR_TITLE);
 
         String menu_options = "\nMain Menu\n1. Show Score\n2. Letters Round\n3. Numbers Round\n4. Quit";
-        MENU menu;
+        GAMEOPTION selection;
         Game game = new Game();
 
         do {
             printCenteredTitle("MAIN MENU", Constants.TOTAL_WIDTH, '-');
-            menu = getMenuSelection(menu_options);
-            switch(menu) {
+            selection = getMenuSelection(menu_options);
+            switch(selection) {
                 case SHOW_SCORE:
                     printCenteredTitle("PLAYER STATS", Constants.TOTAL_WIDTH, '-');
                     game.printGameScoreAsTable();
                     break;
                 case LETTERS:
-                    game.nextRound("LETTERS");
-                    break;
                 case NUMBERS:
-                    game.nextRound("NUMBERS");
+                    game.nextRound(selection);
                     break;
                 case QUIT:
                     System.out.println("\nThank you for playing!\n");
@@ -41,24 +39,24 @@ public class Main {
                 default:
                     System.out.println("\nError: Invalid Menu Option");
             }
-        } while (menu != MENU.QUIT);
+        } while (selection != GAMEOPTION.QUIT);
 
     }
 
-    static MENU getMenuSelection(String menu_options) {
+    static GAMEOPTION getMenuSelection(String menu_options) {
         int input;
-        MENU menu = MENU.ERROR;
+        GAMEOPTION menu = GAMEOPTION.ERROR;
 
         try {
             System.out.println(menu_options);
             input = Integer.parseInt(System.console().readLine("Selection: "));
 
-            if (input > 0 && input < MENU.values().length) {
-                menu = MENU.values()[input];
+            if (input > 0 && input < GAMEOPTION.values().length) {
+                menu = GAMEOPTION.values()[input];
             }
         }
         catch (NumberFormatException ex) {
-            input = MENU.values().length;
+            input = GAMEOPTION.values().length;
         }
         return menu;
     }

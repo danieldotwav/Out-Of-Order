@@ -35,9 +35,7 @@ public class Game implements Constants {
     public void increaseLettersScore(int pts) { letters_score += pts; }
     public void increaseNumbersScore(int pts) { numbers_score += pts; }
 
-    //////////////////////////////////////// GAME TIME ////////////////////////////////////////////
-
-    public void nextRound(String game_type) {
+    public void nextRound(GAMEOPTION game_type) {
         DIFFICULTY difficulty = getDifficulty();
         int num_points = 0, num_items = 0;
         List<Character> char_list = null;
@@ -75,13 +73,13 @@ public class Game implements Constants {
         int correct_number = 0;
 
         // Generate List / Randomly Swap 2 Items
-        if("LETTERS".equals(game_type)) {
+        if (game_type.equals(GAMEOPTION.LETTERS)) {
             char_list = new ArrayList<>();
             char_list = generateRandomList(num_items, game_type);
             Collections.swap(char_list, random_index1, random_index2);
             correct_letter = char_list.get(Math.min(random_index1, random_index2));
         }
-        else if ("NUMBERS".equals(game_type)) {
+        else if (game_type.equals(GAMEOPTION.NUMBERS)) {
             numbers_list = new ArrayList<>();
             numbers_list = generateRandomList(num_items, Constants.MAX_NUM);
             Collections.swap(numbers_list, random_index1, random_index2);
@@ -95,7 +93,7 @@ public class Game implements Constants {
         // Play Round
         boolean playerWins = false;
 
-        if("LETTERS".equals(game_type)) {
+        if (game_type.equals(GAMEOPTION.LETTERS)) {
             String instructions = "\nInstructions: Type in the first Letter in the list that's out of order\n";
             display(char_list, instructions);
 
@@ -103,23 +101,22 @@ public class Game implements Constants {
             char user_input = System.console().readLine().charAt(0);
             playerWins = checkAnswer(user_input, correct_letter);
         }
-        else if ("NUMBERS".equals(game_type)) {
+        else if (game_type.equals(GAMEOPTION.NUMBERS)) {
             String instructions = "\nInstructions: Type in the first Number in the list that's out of order\n";
             display(numbers_list, instructions);
 
             System.out.print(">> ");
             String tmp = System.console().readLine();
             int user_input = Integer.parseInt(tmp);
-
             playerWins = checkAnswer(user_input, correct_number);
         }
 
         // Check for all game modes (for future additions)
-        if(playerWins) {
-            if(game_type == "LETTERS") {
+        if (playerWins) {
+            if (game_type.equals(GAMEOPTION.LETTERS)) {
                 increaseLettersScore(num_points);
             }
-            else if (game_type == "NUMBERS") {
+            else if (game_type.equals(GAMEOPTION.NUMBERS)) {
                 increaseNumbersScore(num_points);
             }
         }
@@ -154,26 +151,24 @@ public class Game implements Constants {
             System.out.println(menu_options);
             input = Integer.parseInt(System.console().readLine("Selection: "));
 
-            if (input > 0 && input < MENU.values().length) {
+            if (input > 0 && input < DIFFICULTY.values().length) {
                 difficulty = DIFFICULTY.values()[input];
             }
         }
         catch (NumberFormatException ex) {
-            input = MENU.values().length;
+            input = DIFFICULTY.values().length;
         }
 
         return difficulty;
     }
 
     // Overloaded method for letters game
-    public static List<Character> generateRandomList(int size, String gameType) {
+    public static List<Character> generateRandomList(int size, GAMEOPTION gameType) {
         List<Character> list = new ArrayList<>();
-        if ("LETTERS".equals(gameType)) {
-            while (list.size() < size) {
-                char randomChar = (char) ('A' + random.nextInt(26));
-                if (!list.contains(randomChar)) {
-                    list.add(randomChar);
-                }
+        while (list.size() < size) {
+            char randomChar = (char) ('A' + random.nextInt(26));
+            if (!list.contains(randomChar)) {
+                list.add(randomChar);
             }
         }
         Collections.sort(list);
@@ -208,7 +203,6 @@ public class Game implements Constants {
     }
 
     public static <T> void display(List<T> list, String message) {
-        //Main.printCenteredTitle(message, Constants.TOTAL_WIDTH, Constants.PADDING_CHAR_MENU);
         System.out.println(message);
 
         for (T element : list) {
@@ -219,14 +213,16 @@ public class Game implements Constants {
     }
 
     public void printGameScoreAsTable() {
-        System.out.println("\nScores:");
-        System.out.println("+-----------------+---------------+");
-        System.out.println("| Letter Game     | " + String.format("%10s", getLettersScore()) + " PTS|");
-        System.out.println("| Number Game     | " + String.format("%10s", getNumbersScore()) + " PTS|");
-        System.out.println("+-----------------+---------------+");
-        System.out.println("| Total Score     | " + String.format("%10s", getTotalScore()) + " PTS|");
-        System.out.println("| Games Played    | " + String.format("%10s", getNumGamesPlayed()) + "    |");
-        System.out.println("+-----------------+---------------+");
+        StringBuilder str = new StringBuilder();
+        str.append("\nScores:\n+-----------------+---------------+\n| Letter Game     | ")
+           .append(String.format("%10s", getLettersScore()))
+           .append(" PTS|\n").append("| Number Game     | ")
+           .append(String.format("%10s", getNumbersScore()))
+           .append(" PTS|\n+-----------------+---------------+\n")
+           .append("| Total Score     | ").append(String.format("%10s", getTotalScore())).append(" PTS|\n")
+           .append("+-----------------+---------------+");
+
+        System.out.println(str);
     }
 
 }
